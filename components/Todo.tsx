@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
-import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import React, { Fragment, useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import { ITodo } from "../types/Todo";
 
@@ -91,19 +91,24 @@ const Todo = (props: Props): JSX.Element => {
           onPress={handlePressTickIcon}
         />
       ) : (
-        <MaterialIcons
-          style={[styles.editIcon, isCompleted && styles.editIconCompleted]}
-          name="edit"
-          size={24}
-          onPress={handlePressEditIcon}
-        />
+        <Fragment>
+          <MaterialIcons
+            style={[styles.editIcon, isCompleted && styles.editIconCompleted]}
+            name="edit"
+            size={24}
+            onPress={handlePressEditIcon}
+          />
+          <MaterialIcons
+            style={[
+              styles.deleteIcon,
+              isCompleted && styles.deleteIconCompleted,
+            ]}
+            name="delete"
+            size={24}
+            onPress={handlePressDeleteIcon}
+          />
+        </Fragment>
       )}
-      <MaterialIcons
-        style={[styles.deleteIcon, isCompleted && styles.deleteIconCompleted]}
-        name="delete"
-        size={24}
-        onPress={handlePressDeleteIcon}
-      />
     </View>
   );
 };
@@ -132,6 +137,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: "#dc4146",
     flex: 1,
+    fontFamily: "Inter-Bold",
     fontSize: 16,
     paddingHorizontal: 7,
     paddingVertical: 5,

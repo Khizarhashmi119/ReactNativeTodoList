@@ -1,43 +1,41 @@
+import { Entypo } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
 import {
-  StyleSheet,
+  Alert,
+  FlatList,
+  Keyboard,
   StatusBar,
+  StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
-  Keyboard,
-  FlatList,
 } from "react-native";
-import { MaterialIcons, Entypo } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import AddTodoForm from "./components/AddTodoForm";
+import Header from "./components/Header";
 import Todo from "./components/Todo";
 
 import { ITodo } from "./types/Todo";
 
 const App = () => {
-  const [todos, setTodos] = useState<ITodo[]>([
-    {
-      id: "113252545",
-      text: "Buy food",
-      isCompleted: false,
-    },
-    {
-      id: "113252546",
-      text: "Cook food",
-      isCompleted: true,
-    },
-    {
-      id: "113252547",
-      text: "Eat food",
-      isCompleted: false,
-    },
-  ]);
+  const [todos, setTodos] = useState<ITodo[]>([]);
+  const [fontsLoaded] = useFonts({
+    "Inter-Black": require("./assets/fonts/Inter-Black.ttf"),
+    "Inter-Bold": require("./assets/fonts/Inter-Bold.ttf"),
+    "Inter-ExtraBold": require("./assets/fonts/Inter-ExtraBold.ttf"),
+    "Inter-ExtraLight": require("./assets/fonts/Inter-ExtraLight.ttf"),
+    "Inter-Light": require("./assets/fonts/Inter-Light.ttf"),
+    "Inter-Medium": require("./assets/fonts/Inter-Medium.ttf"),
+    "Inter-Regular": require("./assets/fonts/Inter-Regular.ttf"),
+    "Inter-SemiBold": require("./assets/fonts/Inter-SemiBold.ttf"),
+    "Inter-Thin": require("./assets/fonts/Inter-Thin.ttf"),
+  });
 
   useEffect(() => {
     AsyncStorage.getItem("todos").then((value) => {
-      setTodos(JSON.parse(value || "[]"));
+      setTodos(JSON.parse(value ?? "[]"));
     });
   }, []);
 
@@ -75,17 +73,39 @@ const App = () => {
   };
 
   const deleteTodo = (id: string) => {
-    setTodos((prevState) => prevState.filter((todo) => todo.id !== id));
+    Alert.alert(
+      "Please confirm",
+      `Do you want to delete this todo "${
+        todos.find(({ id: todoId }) => todoId === id)?.text
+      }"?`,
+      [
+        {
+          text: "No",
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            setTodos((prevState) => prevState.filter((todo) => todo.id !== id));
+          },
+          style: "destructive",
+        },
+      ]
+    );
   };
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback onPress={handlePressApp}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <MaterialIcons name="sticky-note-2" size={24} color="#000000" />
-          <Text style={styles.headerText}>Todos</Text>
-          <Text style={styles.statusText}>No. of todos: {todos.length}</Text>
-        </View>
+        <Header noOfTodos={todos.length} />
         <AddTodoForm addTodo={addTodo} />
         <View style={styles.todosContainer}>
           {todos.length ? (
@@ -116,25 +136,18 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
+  loadingText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
   container: {
     flex: 1,
     backgroundColor: "#fefefe",
-  },
-  header: {
-    alignItems: "center",
-    backgroundColor: "#e3be31",
-    flexDirection: "row",
-    padding: 16,
-  },
-  headerText: {
-    color: "#000000",
-    flex: 1,
-    fontSize: 24,
-    fontWeight: "bold",
-    marginLeft: 10,
-  },
-  statusText: {
-    fontWeight: "700",
   },
   todosContainer: {
     flex: 1,
@@ -150,8 +163,8 @@ const styles = StyleSheet.create({
   },
   noTodoText: {
     color: "#cccccc",
+    fontFamily: "Inter-ExtraBold",
     fontSize: 20,
-    fontWeight: "bold",
   },
   noTodoIcon: {
     color: "#cccccc",

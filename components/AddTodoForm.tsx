@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 2,
     flex: 1,
+    fontFamily: "Inter-Regular",
     fontSize: 18,
     paddingHorizontal: 10,
     paddingVertical: 5,
